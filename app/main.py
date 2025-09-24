@@ -5,7 +5,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from .database import engine, SessionLocal, Base
 from .config import settings
 from fastapi.middleware.cors import CORSMiddleware
-from .routers import users
+from .routers import users,authors,admins,reviewers
 
 
 app = FastAPI(
@@ -29,3 +29,6 @@ app.add_middleware(
 )
 
 app.include_router(users.router)
+app.include_router(authors.router)
+app.include_router(reviewers.router)
+app.include_router(admins.router)

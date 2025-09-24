@@ -14,7 +14,7 @@ ALGORITHM = settings.algorithm
 ACCESS_TOKEN_EXPIRE_MINUTES = settings.access_token_expire_minutes
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/login_user")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/users/login_user")
 
 def get_db():
     db = SessionLocal()

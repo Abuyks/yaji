@@ -27,3 +27,72 @@ def create_user(db: Session, user: schemas.UserCreate):
     db.commit()
     db.refresh(db_user)
     return db_user
+
+def create_paper(db: Session, paper: schemas.PaperCreate, file_path: str, author_id: int):
+    db_paper = models.Paper(
+        title=paper.title,
+        abstract=paper.abstract,
+        keywords=paper.keywords,
+        file_path=file_path,
+        author_id=author_id,
+        status=models.PaperStatus.PENDING,
+        version=1,
+        uploaded_at=datetime.utcnow(),
+    )
+    db.add(db_paper)
+    db.commit()
+    db.refresh(db_paper)
+    return db_paper
+
+
+def get_papers_by_author(db: Session, author_id: int):
+    return db.query(models.Paper).filter(models.Paper.author_id == author_id).all()
+
+def assign_reviewer(db: Session, paper_id: int, reviewer_id: int):
+    assignment = models.Assignment(paper_id=paper_id, reviewer_id=reviewer_id)
+    db.add(assignment)
+    db.commit()
+    db.refresh(assignment)
+    return assignment
+
+
+def remove_reviewer(db: Session, paper_id: int, reviewer_id: int):
+    assignment = (
+        db.query(models.Assignment)
+        .filter(
+            models.Assignment.paper_id == paper_id,
+            models.Assignment.reviewer_id == reviewer_id,
+        )
+        .first()
+    )
+    if assignment:
+        db.delete(assignment)
+        db.commit()
+    return assignment
+
+
+def get_all_assigned_papers(db: Session):
+    return (
+        db.query(models.Assignment)
+        .options(joinedload(models.Assignment.paper), joinedload(models.Assignment.reviewer))
+        .all()
+    )
+
+
+# ---------- Reviewer ----------
+def get_reviewer_papers(db: Session, reviewer_id: int):
+    return (
+        db.query(models.Assignment)
+        .filter(models.Assignment.reviewer_id == reviewer_id)
+        .options(joinedload(models.Assignment.paper))
+        .all()
+    )
+
+
+def update_paper_status(db: Session, paper_id: int, status: models.PaperStatus):
+    paper = db.query(models.Paper).filter(models.Paper.id == paper_id).first()
+    if paper:
+        paper.status = status
+        db.commit()
+        db.refresh(paper)
+    return paper

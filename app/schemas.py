@@ -51,3 +51,45 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     email: str | None = None
+
+class PaperStatus(str, Enum):
+    pending = "pending"
+    accept = "accept"
+    reject = "reject"
+    revise = "revise"
+
+
+class PaperBase(BaseModel):
+    title: str
+    abstract: str
+    keywords: Optional[str] = None
+
+
+class PaperCreate(PaperBase):
+    pass   # file will be handled separately
+
+
+class PaperResponse(PaperBase):
+    id: int
+    status: PaperStatus
+    version: int
+    uploaded_at: datetime
+
+    class Config:
+        from_attributes = True
+
+class AssignmentBase(BaseModel):
+    paper_id: int
+    reviewer_id: int
+
+
+class AssignmentResponse(BaseModel):
+    id: int
+    paper_id: int
+    reviewer_id: int
+    assigned_date: datetime
+    # Include related names
+    title: str
+    author_name: str
+    reviewer_name: str
+    status: str
