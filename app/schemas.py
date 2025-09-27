@@ -74,6 +74,7 @@ class PaperResponse(PaperBase):
     status: PaperStatus
     version: int
     uploaded_at: datetime
+    author: UserResponse
 
     class Config:
         from_attributes = True
@@ -85,11 +86,18 @@ class AssignmentBase(BaseModel):
 
 class AssignmentResponse(BaseModel):
     id: int
-    paper_id: int
-    reviewer_id: int
     assigned_date: datetime
-    # Include related names
-    title: str
-    author_name: str
-    reviewer_name: str
-    status: str
+    paper: PaperResponse       # 👈 nested paper info
+    reviewer: UserResponse     # 👈 nested reviewer info
+
+    class Config:
+        from_attributes = True
+
+class ReviewerWithCountResponse(BaseModel):
+    id: int
+    email: str
+    role: str
+    assigned_papers_count: int
+
+    class Config:
+        from_attributes = True

@@ -44,6 +44,15 @@ def create_paper(db: Session, paper: schemas.PaperCreate, file_path: str, author
     db.refresh(db_paper)
     return db_paper
 
+def get_all_papers(db: Session):
+    return db.query(models.Paper).options(
+        joinedload(models.Paper.author)  # preload author details
+    ).all()
+
+def get_all_reviewers(db: Session):
+    return db.query(models.User).filter(models.User.role == models.UserRole.REVIEWER).all()
+
+
 
 def get_papers_by_author(db: Session, author_id: int):
     return db.query(models.Paper).filter(models.Paper.author_id == author_id).all()
@@ -84,9 +93,13 @@ def get_reviewer_papers(db: Session, reviewer_id: int):
     return (
         db.query(models.Assignment)
         .filter(models.Assignment.reviewer_id == reviewer_id)
-        .options(joinedload(models.Assignment.paper))
+        .options(
+            joinedload(models.Assignment.paper).joinedload(models.Paper.author),
+            joinedload(models.Assignment.reviewer),
+        )
         .all()
     )
+
 
 
 def update_paper_status(db: Session, paper_id: int, status: models.PaperStatus):
@@ -96,3 +109,19 @@ def update_paper_status(db: Session, paper_id: int, status: models.PaperStatus):
         db.commit()
         db.refresh(paper)
     return paper
+
+from sqlalchemy import func
+
+def get_all_reviewers_with_counts(db: Session):
+    return (
+        db.query(
+            models.User.id,
+            models.User.email,
+            models.User.role,
+            func.count(models.Assignment.id).label("assigned_papers_count"),
+        )
+        .outerjoin(models.Assignment, models.Assignment.reviewer_id == models.User.id)
+        .filter(models.User.role == models.UserRole.REVIEWER)
+        .group_by(models.User.id)
+        .all()
+    )

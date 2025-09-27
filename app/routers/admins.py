@@ -17,6 +17,43 @@ router = APIRouter(
 )
 
 
+@router.get("/papers", response_model=List[schemas.PaperResponse])
+def get_all_papers(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    if current_user.role != models.UserRole.ADMIN:
+        raise HTTPException(status_code=403, detail="Only admins can view all papers")
+
+    papers = crud.get_all_papers(db)
+
+    return papers  # ✅ Pydantic will handle `author` via ORM because of from_attributes
+
+
+@router.get("/reviewers", response_model=List[schemas.ReviewerWithCountResponse])
+def get_all_reviewers(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    if current_user.role != models.UserRole.ADMIN:
+        raise HTTPException(status_code=403, detail="Only admins can access reviewers")
+
+    reviewers = crud.get_all_reviewers_with_counts(db)
+
+    # Convert row objects to dict for schema
+    return [
+        schemas.ReviewerWithCountResponse(
+            id=r.id,
+            email=r.email,
+            role=r.role,
+            assigned_papers_count=r.assigned_papers_count,
+        )
+        for r in reviewers
+    ]
+
+
+
+
 @router.post("/assign", response_model=schemas.AssignmentResponse)
 def assign_paper(
     assignment: schemas.AssignmentBase,
