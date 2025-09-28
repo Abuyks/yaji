@@ -98,12 +98,14 @@ class AssignmentBase(BaseModel):
 
 class AssignmentResponse(BaseModel):
     id: int
+    paper_id: int
+    reviewer_id: int
     assigned_date: datetime
-    paper: PaperResponse       # 👈 nested paper info
-    reviewer: UserResponse     # 👈 nested reviewer info
+    file_url: Optional[str]
 
     class Config:
         from_attributes = True
+
 
 class ReviewerWithCountResponse(BaseModel):
     id: int
