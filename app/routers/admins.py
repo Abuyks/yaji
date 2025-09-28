@@ -65,16 +65,7 @@ def assign_paper(
 
     db_assignment = crud.assign_reviewer(db, paper_id=assignment.paper_id, reviewer_id=assignment.reviewer_id)
 
-    return schemas.AssignmentResponse(
-        id=db_assignment.id,
-        paper_id=db_assignment.paper_id,
-        reviewer_id=db_assignment.reviewer_id,
-        assigned_date=db_assignment.assigned_date,
-        title=db_assignment.paper.title,
-        author_name=db_assignment.paper.author.email,
-        reviewer_name=db_assignment.reviewer.email,
-        status=db_assignment.paper.status.value,
-    )
+    return db_assignment
 
 
 @router.delete("/remove", response_model=schemas.AssignmentResponse)

@@ -32,3 +32,11 @@ app.include_router(users.router)
 app.include_router(authors.router)
 app.include_router(reviewers.router)
 app.include_router(admins.router)
+
+from fastapi.staticfiles import StaticFiles
+import os
+
+# make sure uploads folder exists
+os.makedirs("uploads", exist_ok=True)
+
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")

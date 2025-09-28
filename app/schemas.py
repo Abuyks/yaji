@@ -69,15 +69,27 @@ class PaperCreate(PaperBase):
     pass   # file will be handled separately
 
 
+# class PaperResponse(PaperBase):
+#     id: int
+#     status: PaperStatus
+#     version: int
+#     uploaded_at: datetime
+#     author: UserResponse
+
+#     class Config:
+#         from_attributes = True
+
 class PaperResponse(PaperBase):
     id: int
     status: PaperStatus
-    version: int
-    uploaded_at: datetime
-    author: UserResponse
+    version: Optional[int] = None
+    uploaded_at: Optional[datetime] = None
+    author: Optional[UserResponse] = None
+    file_url: Optional[str] = None  # ✅ add this
 
     class Config:
         from_attributes = True
+
 
 class AssignmentBase(BaseModel):
     paper_id: int
