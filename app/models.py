@@ -54,3 +54,5 @@ class Assignment(Base):
     paper = relationship("Paper", backref="assignments")
     reviewer = relationship("User", backref="assigned_papers")
 
+    __allow_unmapped__ = True
+

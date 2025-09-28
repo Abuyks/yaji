@@ -96,15 +96,30 @@ class AssignmentBase(BaseModel):
     reviewer_id: int
 
 
+# class AssignmentResponse(BaseModel):
+#     id: int
+#     paper_id: int
+#     reviewer_id: int
+#     assigned_date: datetime
+#     file_url: Optional[str] = None
+
+#     class Config:
+#         from_attributes = True
+
 class AssignmentResponse(BaseModel):
     id: int
     paper_id: int
     reviewer_id: int
     assigned_date: datetime
     file_url: Optional[str] = None
+    title: Optional[str] = None
+    author_name: Optional[str] = None
+    reviewer_name: Optional[str] = None
+    status: Optional[str] = None
 
     class Config:
         from_attributes = True
+
 
 
 class ReviewerWithCountResponse(BaseModel):

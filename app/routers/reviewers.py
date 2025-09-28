@@ -18,6 +18,7 @@ router = APIRouter(
 
 @router.get("/papers", response_model=List[schemas.AssignmentResponse])
 def get_my_assigned_papers(
+    request: Request,
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user),
 ):
@@ -26,21 +27,19 @@ def get_my_assigned_papers(
 
     assignments = crud.get_reviewer_papers(db, reviewer_id=current_user.id)
 
-    base_url = "http://127.0.0.1:8000"
-    return [
-        schemas.AssignmentResponse(
-            id=a.id,
-            paper_id=a.paper_id,
-            reviewer_id=a.reviewer_id,
-            assigned_date=a.assigned_date,
-            title=a.paper.title,
-            author_name=a.paper.author.email,
-            reviewer_name=a.reviewer.email,
-            status=a.paper.status.value,
-            file_url=f"{base_url}/uploads/{os.path.basename(a.paper.file_path)}" if a.paper.file_path else None,
-        )
-        for a in assignments
-    ]
+    # Inject extra fields into ORM objects before returning
+    for a in assignments:
+        if a.paper and a.paper.file_path:
+            filename = os.path.basename(a.paper.file_path)
+            a.file_url = f"{request.base_url}uploads/{filename}"
+
+        a.title = a.paper.title if a.paper else None
+        a.author_name = a.paper.author.email if a.paper and a.paper.author else None
+        a.reviewer_name = a.reviewer.email if a.reviewer else None
+        a.status = a.paper.status.value if a.paper else None
+
+    return assignments
+
 
 
 @router.patch("/papers/{paper_id}/status", response_model=schemas.PaperResponse)
