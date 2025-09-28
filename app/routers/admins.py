@@ -27,7 +27,23 @@ def get_all_papers(
 
     papers = crud.get_all_papers(db)
 
-    return papers  # ✅ Pydantic will handle `author` via ORM because of from_attributes
+    base_url = "http://127.0.0.1:8000"  # or use request.base_url if you prefer
+    return [
+        schemas.PaperResponse(
+            id=p.id,
+            title=p.title,
+            abstract=p.abstract,
+            keywords=p.keywords,
+            status=p.status,
+            version=p.version,
+            uploaded_at=p.uploaded_at,
+            author=p.author,
+            file_url=f"{base_url}/uploads/{os.path.basename(p.file_path)}" if p.file_path else None,
+        )
+        for p in papers
+    ]
+
+ # ✅ Pydantic will handle `author` via ORM because of from_attributes
 
 
 @router.get("/reviewers", response_model=List[schemas.ReviewerWithCountResponse])

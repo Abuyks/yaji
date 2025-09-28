@@ -45,9 +45,11 @@ def create_paper(db: Session, paper: schemas.PaperCreate, file_path: str, author
     return db_paper
 
 def get_all_papers(db: Session):
-    return db.query(models.Paper).options(
-        joinedload(models.Paper.author)  # preload author details
-    ).all()
+    return (
+        db.query(models.Paper)
+        .options(joinedload(models.Paper.author))
+        .all()
+    )
 
 def get_all_reviewers(db: Session):
     return db.query(models.User).filter(models.User.role == models.UserRole.REVIEWER).all()

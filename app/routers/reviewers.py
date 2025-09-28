@@ -24,7 +24,23 @@ def get_my_assigned_papers(
     if current_user.role != models.UserRole.REVIEWER:
         raise HTTPException(status_code=403, detail="Only reviewers can access assigned papers")
 
-    return crud.get_reviewer_papers(db, reviewer_id=current_user.id)
+    assignments = crud.get_reviewer_papers(db, reviewer_id=current_user.id)
+
+    base_url = "http://127.0.0.1:8000"
+    return [
+        schemas.AssignmentResponse(
+            id=a.id,
+            paper_id=a.paper_id,
+            reviewer_id=a.reviewer_id,
+            assigned_date=a.assigned_date,
+            title=a.paper.title,
+            author_name=a.paper.author.email,
+            reviewer_name=a.reviewer.email,
+            status=a.paper.status.value,
+            file_url=f"{base_url}/uploads/{os.path.basename(a.paper.file_path)}" if a.paper.file_path else None,
+        )
+        for a in assignments
+    ]
 
 
 @router.patch("/papers/{paper_id}/status", response_model=schemas.PaperResponse)
