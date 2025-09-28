@@ -1,11 +1,11 @@
 aiosmtplib
 alembic
-bcrypt
+bcrypt==4.0.1
+passlib==1.7.4
 email_validator
 fastapi
 fastapi-mail
 Jinja2
-passlib
 psycopg2-binary
 pydantic
 PyJWT
