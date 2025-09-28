@@ -101,7 +101,7 @@ class AssignmentResponse(BaseModel):
     paper_id: int
     reviewer_id: int
     assigned_date: datetime
-    file_url: Optional[str]
+    file_url: Optional[str] = None
 
     class Config:
         from_attributes = True
