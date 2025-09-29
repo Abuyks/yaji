@@ -39,6 +39,7 @@ def get_all_papers(
             uploaded_at=p.uploaded_at,
             author=p.author,
             file_url=f"{base_url}/uploads/{os.path.basename(p.file_path)}" if p.file_path else None,
+            reviewer_comment=p.reviewer_comment,
         )
         for p in papers
     ]

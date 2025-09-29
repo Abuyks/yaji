@@ -104,13 +104,18 @@ def get_reviewer_papers(db: Session, reviewer_id: int):
 
 
 
-def update_paper_status(db: Session, paper_id: int, status: models.PaperStatus):
+def update_paper_status(db: Session, paper_id: int, status: models.PaperStatus, reviewer_comment: Optional[str] = None):
     paper = db.query(models.Paper).filter(models.Paper.id == paper_id).first()
-    if paper:
-        paper.status = status
-        db.commit()
-        db.refresh(paper)
+    if not paper:
+        return None
+
+    paper.status = status
+    if reviewer_comment:
+        paper.reviewer_comment = reviewer_comment  # ✅ save comment
+    db.commit()
+    db.refresh(paper)
     return paper
+
 
 from sqlalchemy import func
 

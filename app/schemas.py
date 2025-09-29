@@ -86,9 +86,15 @@ class PaperResponse(PaperBase):
     uploaded_at: Optional[datetime] = None
     author: Optional[UserResponse] = None
     file_url: Optional[str] = None  # ✅ add this
+    reviewer_comment: Optional[str] = None
 
     class Config:
         from_attributes = True
+
+class PaperStatusUpdate(BaseModel):
+    status: PaperStatus
+    reviewer_comment: Optional[str] = None   # ✅ reviewer can leave reason
+
 
 
 class AssignmentBase(BaseModel):
@@ -96,31 +102,14 @@ class AssignmentBase(BaseModel):
     reviewer_id: int
 
 
-# class AssignmentResponse(BaseModel):
-#     id: int
-#     paper_id: int
-#     reviewer_id: int
-#     assigned_date: datetime
-#     file_url: Optional[str] = None
-
-#     class Config:
-#         from_attributes = True
-
 class AssignmentResponse(BaseModel):
     id: int
-    paper_id: int
-    reviewer_id: int
     assigned_date: datetime
-    file_url: Optional[str] = None
-    title: Optional[str] = None
-    author_name: Optional[str] = None
-    reviewer_name: Optional[str] = None
-    status: Optional[str] = None
+    paper: PaperResponse       # 👈 nested paper info
+    reviewer: UserResponse     # 👈 nested reviewer info
 
     class Config:
         from_attributes = True
-
-
 
 class ReviewerWithCountResponse(BaseModel):
     id: int

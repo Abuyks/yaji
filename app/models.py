@@ -39,6 +39,7 @@ class Paper(Base):
     status = Column(Enum(PaperStatus), default=PaperStatus.PENDING, nullable=False)
     version = Column(Integer, default=1)
     uploaded_at = Column(DateTime, default=datetime.utcnow)
+    reviewer_comment = Column(Text, nullable=True) 
 
     author_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     author = relationship("User", backref="papers")
@@ -53,6 +54,4 @@ class Assignment(Base):
 
     paper = relationship("Paper", backref="assignments")
     reviewer = relationship("User", backref="assigned_papers")
-
-    __allow_unmapped__ = True
 
